@@ -7,10 +7,12 @@ public class DataTypeManager {
     private ArrayList<Number> numberList;
     private boolean isLittleEndian;
     private int floatingPointSize;
+    private int endian;
 
-    DataTypeManager(int floatingPointSize){
+    DataTypeManager(int floatingPointSize, int endian){
         rowList = new ArrayList<>();
         numberList = new ArrayList<>();
+        this.endian = endian;
         this.floatingPointSize = floatingPointSize;
     }
     public void convert(){
@@ -19,17 +21,17 @@ public class DataTypeManager {
         for (String row: rowList){
             //unsigned integer
             if (row.contains("u")){
-                numberList.add(new UnsignedIneteger(row));
+                numberList.add(new UnsignedIneteger(row, endian));
             }
 
             //floating point
             else if (row.contains(".")){
-                numberList.add(new FloatingPoint(row, floatingPointSize));
+                numberList.add(new FloatingPoint(row, floatingPointSize, endian));
             }
 
             //signed integer
             else {
-                numberList.add(new SignedInteger(row));
+                numberList.add(new SignedInteger(row, endian));
             }
 
         }

@@ -3,21 +3,41 @@ package com.company;
 public class SignedInteger extends Number {
     private String row;
     private int number;
+    private int endian ;
+    private int[] binary = new int[16];
+    private String hexString;
 
-    SignedInteger(String row){
+    SignedInteger(String row, int endian){
         super(row);
         this.row = row;
+        this.endian = endian;
         convertToInt();
         convert();
+        hexString = super.convertToHexa(binary);
+        extendHextString();
+        handleByteOrder();
+    }
+    private void handleByteOrder(){
+        //if little endian
+        if (endian==1)
+            hexString = reverseHex(hexString);
+        System.out.println(hexString);
+
+    }
+
+    private void extendHextString(){
+        while (hexString.length() < 4 ){
+            hexString = "0" + hexString;
+        }
     }
 
     private void convertToInt(){
         number = Integer.parseInt(row);
-        System.out.println("got " + number);
     }
 
+
     private void convert(){
-        int[] binary = new int[16];
+        int[] localBinary = new int[16];
         int index = 0;
         boolean isPositive;
 
@@ -25,7 +45,7 @@ public class SignedInteger extends Number {
 
         if(isPositive) {
             while (number > 0) {
-                binary[index++] = number % 2;
+                localBinary[index++] = number % 2;
                 number = number / 2;
             }
         }
@@ -33,21 +53,23 @@ public class SignedInteger extends Number {
             number *= -1;
             number--;
             while (number > 0) {
-                binary[index++] = number % 2;
+                localBinary[index++] = number % 2;
                 number = number / 2;
             }
             for(int j=0; j< 16; j++) {
-                if (binary[j] == 1)
-                    binary[j] = 0;
+                if (localBinary[j] == 1)
+                    localBinary[j] = 0;
                 else
-                    binary[j] = 1;
+                    localBinary[j] = 1;
             }
-            binary[15] = 1 ;
+            localBinary[15] = 1 ;
         }
 
 
-        for(int i = 0; i < 16 ;i++)
-            System.out.print(binary[15 - i]);
-        System.out.println();
+        for(int i = 0; i < 16 ;i++) {
+            binary[i] = localBinary[15 - i];
+            //System.out.print(localBinary[15 - i]);
+        }
+        //System.out.println();
     }
 }
